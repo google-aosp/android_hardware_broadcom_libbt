@@ -195,6 +195,9 @@ int userial_vendor_open(tUSERIAL_CFG *p_cfg)
     uint8_t data_bits;
     uint16_t parity;
     uint8_t stop_bits;
+#if (BT_WAKE_VIA_USERIAL_IOCTL==TRUE)
+    int ldisc;
+#endif
 
     vnd_userial.fd = -1;
 
@@ -265,6 +268,9 @@ int userial_vendor_open(tUSERIAL_CFG *p_cfg)
     tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
 
 #if (BT_WAKE_VIA_USERIAL_IOCTL==TRUE)
+    ldisc = 25; // N_BRCM_HCI
+    ioctl(vnd_userial.fd, TIOCSETD, &ldisc);
+
     userial_ioctl_init_bt_wake(vnd_userial.fd);
 #endif
 
